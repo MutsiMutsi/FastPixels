@@ -11,8 +11,8 @@ namespace FastPixels
 		private GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
 
-		public const int RESOLUTION_X = 3440;
-		public const int RESOLUTION_Y = 1440;
+		public const int RESOLUTION_X = 1920;
+		public const int RESOLUTION_Y = 1080;
 
 		private Color[] rngCol = new Color[256];
 		private Effect pixelShader;

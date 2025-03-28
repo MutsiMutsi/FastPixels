@@ -99,8 +99,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     
     // Provide a default implementation
     output.Position = float4(
-         ix / (3440.0 / 2.0) - 1.0,
-        1.0 - iy / (1440.0 / 2.0),
+         ix / (1920.0 / 2.0) - 1.0,
+        1.0 - iy / (1080.0 / 2.0),
         0.0,
         1.0
     );
