@@ -1,31 +1,19 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework.Graphics;
 
 namespace FastPixels
 {
 	public struct PixelDeclaration
 	{
-		public short X; // 16-bit integer for X
-		public short Y; // 16-bit integer for Y
-		public Color Color; // Color of the pixel
-
-		public PixelDeclaration(short x, short y, Color color)
+		public uint val;
+		public PixelDeclaration(uint value)
 		{
-			X = x;
-			Y = y;
-			Color = color;
+			val = value;
 		}
 
-		public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration
-		(
-			new VertexElement(0, VertexElementFormat.Short2, VertexElementUsage.Position, 0),
-			new VertexElement(4, VertexElementFormat.Color, VertexElementUsage.Color, 0)
+		// Recommended Vertex Declaration
+		public static readonly VertexDeclaration VertexDeclaration = new(
+			// Key Change: Specify the correct size and type
+			new VertexElement(0, VertexElementFormat.Single, VertexElementUsage.TextureCoordinate, 0)
 		);
 	}
 
@@ -47,16 +35,42 @@ namespace FastPixels
 			_vertexBuffer = new VertexBuffer(gd, PixelDeclaration.VertexDeclaration, pixelCount, BufferUsage.WriteOnly);
 			gd.SetVertexBuffer(_vertexBuffer);
 		}
+		public static uint Pack(uint x, uint y, uint c)
+		{
+			x &= 0xFFF;
+			y &= 0xFFF;
+			c &= 0xFF;
 
-		public static void SetPixel(int x, int y, Color color)
+			// Pack into a single 32-bit integer
+			uint packed = (x << 20) | (y << 8) | c;
+			return packed;
+		}
+
+		public static void SetPixel(uint x, uint y, byte colorIdx)
 		{
 			// Calculate the index from x and y
-			int index = y * _resX + x;
+			int index = (int)((y * _resX) + x);
 
-			// Set the pixel data
-			_pixels[index].X = (short)x;
-			_pixels[index].Y = (short)y;
-			_pixels[index].Color = color;
+			_pixels[index].val = Pack(x, y, colorIdx);
+		}
+		public static void SetPixel(int x, int y, byte colorIdx)
+		{
+			// Calculate the index from x and y
+			int index = (y * _resX) + x;
+
+			_pixels[index].val = Pack((uint)x, (uint)y, colorIdx);
+		}
+
+		public static byte GetPixel(uint x, uint y)
+		{
+			int index = (int)((y * _resX) + x);
+			return (byte)(_pixels[index].val & 0xFF);
+		}
+
+		public static byte GetPixel(int x, int y)
+		{
+			int index = (y * _resX) + x;
+			return (byte)(_pixels[index].val & 0xFF);
 		}
 
 		public static void UpdatePixelBuffer()
